@@ -31,6 +31,7 @@ h1 {
 }
 
 p {
+	display: inline-block;
 	margin-top: -10px;
 	font-weight: bold;
 	font-size: large;

@@ -2,7 +2,11 @@ document.addEventListener('DOMContentLoaded',() => {
 
     const form = document.querySelector("form");
 
+    //HELPER FUNCTINOS
+
+    //Takes and array of ids an returns a new array with all the elements that matched the id
     function getByIds (ids) {
+
         const elements = [];
 
         for (let id of ids) {
@@ -12,20 +16,7 @@ document.addEventListener('DOMContentLoaded',() => {
         return elements;
     }
 
-    function getById(id) {
-        return document.getElementById(id)
-    }
-
-    const [
-        userNameInput,emailInput,title,
-        jobRole,design,colors,paymentInfo,
-        paypal,bitCoin,creditCard,shirtColors,
-        ] = getByIds(
-        ["name","mail","title","other-title",
-        "design","color","payment","paypal",
-        "bitcoin","credit-card","shirt-colors"]);
-
-    //Helper Functions
+    //Creates a p tag with a erorr message(text) and inserts it to (father).
     function createError (text,father) {
 
         const error = document.createElement("p");
@@ -36,73 +27,88 @@ document.addEventListener('DOMContentLoaded',() => {
         return error
     }
 
-    const hideOrshow = e => e.hidden = e.hidden ? false:true;
+    //Takes a e(short for element) and a value if value == hide.
+    //returns e.hidden property set to true else set to false.
+    const hideOrshow = (e,value) => e.hidden = value == "hide" ? true:false;
+
+    //Array descructuring to assign the matches from (getByIds)
+    //expample => 'const[userNameInput] will be assign the value of
+    //the first element of ids(Array) which is "name" then emailInput
+    //the value found with the id "mail" (second id in ids) and so on...
+    const [userNameInput,emailInput,title,
+        jobRole,design,colors,shirtColors] = getByIds(
+        ["name","mail","title","other-title",
+        "design","color","shirt-colors"]);
+
 
 
     //Starting the form
-    hideOrshow(jobRole);
+    hideOrshow(jobRole,'hide');
     userNameInput.focus();
 
     //Job Role field.
     title.addEventListener('change', e => {
         const titleChoice = e.target.value;
+        //if titleChoice is equal to "other" set jobRole's hidden property to false otherwise true.
         jobRole.hidden = titleChoice === "other" ? false: true;
     });
 
     //Hide color selection and label
-    hideOrshow(shirtColors);
+    hideOrshow(shirtColors,'hide');
 
-    //Parsing html collection to an array and split it the colors with the Array.slice(start,end)
+    //Parsing html collection(colors) to an array and split it the colors with the Array.slice(start,end)
     const colorsArr = Object.values(colors);
     const js_puns = colorsArr.slice(0,3);
     const love_js = colorsArr.slice(3,);
+
 
     design.addEventListener("change",e => {
         const designChoice = e.target.value;
 
         if (designChoice === design[1].value){
 
-            shirtColors.hidden = false;
+            //Show colors and selection
+            hideOrshow(shirtColors,'show');
+
+            //Hide love_js colors and show js_puns Colors
+            js_puns.forEach(e => hideOrshow(e,"show"));
+            love_js.forEach(e => hideOrshow(e,"hide"));
             
-            for (let i = 0; i < js_puns.length; i++) {
-
-                js_puns[i].hidden = false;
-                love_js[i].hidden = true;
-                
-            };
-
+            //Select the fisrt color by default
             js_puns[0].selected = true
         }
         else if(designChoice === design[2].value) {
 
-            shirtColors.hidden = false;
+            //Show colors and selection
+            hideOrshow(shirtColors,'show');
 
-            for (let i = 0; i < love_js.length; i++) {
-                love_js[i].hidden = false;
-                js_puns[i].hidden = true;
-            };
+            //Hide js_puns colors and show love_js Colors
+            love_js.forEach(e => hideOrshow(e,"show"));
+            js_puns.forEach(e => hideOrshow(e,"hide"));
             
+            //Select the fisrt color by default
             love_js[0].selected = true;
 
         } else {
-            hideOrshow(shirtColors)
-            colorsArr.every(option => hideOrshow(option));
+            //Hide colors as well as all the options
+            hideOrshow(shirtColors,'hide')
+            colorsArr.forEach(option => hideOrshow(option,'hide'));
         }
     })
 
     //Activities
     const actControl = document.querySelector(".activities");
     const activities = document.querySelectorAll(".activities input");
-    let totalCost = 0;
     const costElement = document.createElement("span");
+    let totalCost = 0;
 
     actControl.insertAdjacentElement("beforeend",costElement);
-
 
     actControl.addEventListener('change', e => {
         const target = e.target;
         const attr = "data-day-and-time";
 
+        //If the current checkbox is checked add the value of "data-cost" to totalCost else substract it
         target.checked
         ? totalCost += Number(target.getAttribute("data-cost"))
         : totalCost -= Number(target.getAttribute("data-cost"))
@@ -110,182 +116,208 @@ document.addEventListener('DOMContentLoaded',() => {
         costElement.textContent = `Total: $${totalCost}`;
         
         for (let a of activities) {
-
+            //if the target's "data-day-and-time" attribute matches the current's
+            //and also are different activities then proceed.
             if (a.getAttribute(attr) === target.getAttribute(attr) && target !== a){
 
+                //if current target is checked
+                //assigns true or false to a.disabled(property)-(a = activitie with same data-day-and-time as current) 
                 (a.disabled = target.checked ? true:false )
             }
         }
     });
 
 
-    //Payment Information
+    //PAYMENT INFORMATION
 
+    const [paymentInfo,paypal,bitCoin,creditCard] = getByIds(["payment","paypal","bitcoin","credit-card"]);
     const paymentMethods = [paypal,bitCoin,creditCard];
 
+    //The value of select is will be te first payment method to dispay once the page loads.
     function showPayment(methods,select){
         
+        //loops trough the methods(Array)
         for (let method of methods){
+            
+            //if the id of method is equal to select(argument) the current's method hidden property
+            //is set to false otherwise to true.
             method.hidden = method.id === select ? false:true
         }
     }
 
-    showPayment(paymentMethods,"credit-card")
-
-    paymentInfo[1].selected = true;
+    //Disables the "select payment" option from the select field.
     paymentInfo[0].disabled = true;
 
+    //Credit card willd be the first payment method in the select.
+    showPayment(paymentMethods,"credit-card")
+
     paymentInfo.addEventListener('change', e => {
-        const target = e.target.value;
-        showPayment(paymentMethods,target)
+        const method = e.target.value;
+
+        //Call to the showPayment functoin with the user's selected paymet method as argument
+        showPayment(paymentMethods,method)
     });
 
-    //Validations
+
+    //VALIDATION
+
+    //Takes a validartor example => isValidName returns another function with an (e) as argument
+    //representing the event from addEventListener then asigns it's content to "value" = (variable)
+    //And calls the validator with value as argument wich will be evaluated depending on the field it was called
+    function createListener (validator) {
+        return e => {
+            value = e.target.value;
+            validator(value);
+        }
+    }
+
+    //Payment error are very similar so this function will take care of them by taking their value,regex,input and error messages
+    //as arguments. since not all the erorr's are the same the switch statement helps to catch where we're at
+    //and update the textContent Based on that.
+    function paymenErorControl (value,regex,input,error) {
+
+        if (value.trim("") === "") {
+
+            hideOrshow(error,"show");
+            //Updates Error message.
+            switch (input.id) {
+                case "cc-num":
+                error.textContent = "Please provide a credir card number";
+                break;
+
+                case "zip":
+                error.textContent ="Please provide a zipCode";
+                break;
+
+                case "cvv":
+                cvvErorr.textContent = "Please provide cvv code";
+                break;
+
+                default:
+                break;
+            }
+            input.style.border = "2px solid red";
+            return false
+        }
+        else if (!regex.test(value)) {
+
+            hideOrshow(error,"show");
+            //Update Error Message
+            switch (input.id) {
+                case "cc-num":
+                error.textContent = "Card number must be between 13 and 16 digits long";
+                break;
+
+                case "zip":
+                error.textContent ="Zip code must have at least 5 digits";
+                break;
+
+                case "cvv":
+                cvvErorr.textContent = "cvv must be 3 digits long";
+                break;
+
+                default:
+                break;
+            }
+            input.style.border = "2px solid red";
+            return false
+        }
+        input.style.border = "2px solid rgb(111, 157, 220)";
+        hideOrshow(error,"hide");
+        return true
+    }
+
+    //UserName Validation
     const nameErorr = createError("Please enter a name",userNameInput);
 
-    function isValidName () {
-        const name = userNameInput.value;
+    function isValidName (value) {
 
-        if (name.length > 0) {
-            nameErorr.hidden = true;
+        if (value.length > 0) {
+
+            //Hide Erorr
+            hideOrshow(nameErorr,"hide")
             userNameInput.style.border = "2px solid rgb(111, 157, 220)";
             return true
         }
+
         userNameInput.style.border = "2px solid red";
-        nameErorr.hidden = false;
+        //Show Error
+        hideOrshow(nameErorr,"show")
         return false
     }
 
-    userNameInput.addEventListener("input",e => {
-        isValidName();
-    });
-
+    //EmailAddress validation
     const emailError = createError("Please include an (@) and a (.)",emailInput);
 
-    function isValidEmail(){
-        const email = emailInput.value;
-        const ad = email.indexOf("@");
-        const dot = email.lastIndexOf(".");
+    function isValidEmail(value){
 
-        if (ad > 0 && dot > ad + 1){
+        const ad = value.indexOf("@");
+        const dot = value.lastIndexOf(".");
+
+        //If the last index where (.) appered in the emialAddress is greater than (@)'s +1 return true
+        if (ad > 0 && dot > ad + 1) {
+
             emailInput.style.border = "2px solid rgb(111, 157, 220)";
-            emailError.hidden = true;
+            hideOrshow(emailError,"hide");
             return true
         }
-        emailError.hidden = false;
+
+        hideOrshow(emailError,"show");
         emailInput.style.border = "2px solid red";
         return false
     }
-    emailInput.addEventListener("keyup",e =>{
-        isValidEmail()
-    })
 
-
+    //Activitie Validation
     const activitieError = createError("Please select 1 or more activities",actControl);
+
     function isValidActtivitie () {
         
+        //Loops trough the activities and if anyone's checked returns true, otherwise false.
         for (let a of activities) {
             
             if (a.checked) {
-                activitieError.hidden = true
+                hideOrshow(activitieError,"hide")
                 return true
             }
         }
-        activitieError.hidden = false;
+
+        hideOrshow(activitieError,"show");
         return false
     }
 
-    actControl.addEventListener("change",e =>{
-        isValidActtivitie()
-    })
+    //Declaration of the paymentMethods INPUTS
+    const [zipCodeInput,cvvInput,creditCardInput] = getByIds(["zip","cvv","cc-num"])
 
-    const zipCodeInput = getById("zip");
-    const cvvInput = getById("cvv");
-    const creditCardInput = getById("cc-num");
-
-    const cardErorr = createError("",creditCardInput)
-    function isValidCreditCard () {
-        const card = creditCardInput.value;
-        const reg = /^\d{13,16}$/;
-
-        if (card.trim("") === ""){
-            cardErorr.hidden = false;
-            cardErorr.textContent = "Please provide a credir card number";
-            creditCardInput.style.border = "2px solid red";
-            return false
-        }
-        else if(!reg.test(card)) {
-            cardErorr.hidden = false;
-            cardErorr.textContent = "Card number must be between 13 and 16 digits long";
-            creditCardInput.style.border = "2px solid red";
-            return false
-        }
-        creditCardInput.style.border = "2px solid rgb(111, 157, 220)";
-        cardErorr.hidden = true;
-        return true
+    //CreditCard Validation
+    const cardErorr = createError("",creditCardInput);
+    function isValidCreditCard (value) {
+        paymenErorControl(value,/^\d{13,16}$/,creditCardInput,cardErorr)
     }
 
-    const zipError = createError("",zipCodeInput)
-    function isValidZipcode(){
-        const zipCode = zipCodeInput.value;
-        const reg = /\d{5,}/;
-
-        if (zipCode.trim("") === "") {
-            zipError.hidden = false
-            zipError.textContent = "Please enter a zip Code"
-            zipCodeInput.style.border = "2px solid red";
-            return false
-        }
-
-        if (!reg.test(zipCode)) {
-            zipError.hidden = false
-            zipError.textContent = "Zip code must have at least 5 digits"
-            zipCodeInput.style.border = "2px solid red";
-            return false
-        }
-        zipError.hidden = true
-        zipCodeInput.style.border = "2px solid rgb(111, 157, 220)";
-        return true
-        
+    //ZipCode Validation
+    const zipError = createError("",zipCodeInput);
+    function isValidZipcode (value) {
+        paymenErorControl(value,/\d{5,}/,zipCodeInput,zipError)
     }
 
+    //CVV code Validation
     const cvvErorr = createError("",cvvInput);
-    function isValidCvv () {
-        const cvv = cvvInput.value;
-        const reg = /^\d{3}$/;
-
-        if (cvv.trim("") === "") {
-            cvvErorr.hidden = false
-            cvvErorr.textContent = "Please enter a cvv Code"
-            cvvInput.style.border = "2px solid red";
-            return false
-        }
-
-        if (!reg.test(cvv)) {
-            cvvErorr.textContent = "CVV must be 3 digits long";
-            cvvInput.style.border = "2px solid red";
-            cvvErorr.hidden = false
-            return false
-        }
-        cvvErorr.hidden = true
-        cvvInput.style.border = "2px solid rgb(111, 157, 220)";
-        return true
-
+    function isValidCvv (value) {
+        paymenErorControl(value,/^\d{3}$/,cvvInput,cvvErorr)
     }
 
-    creditCardInput.addEventListener("blur", () => {
-        isValidCreditCard()
-    });
-
-    zipCodeInput.addEventListener("keyup", () => {
-        isValidZipcode();
-    });
-
-    cvvInput.addEventListener("keyup", () => {
-        isValidCvv()
-    });
+    //Event listeners
+    userNameInput.addEventListener("input",createListener(isValidName));
+    emailInput.addEventListener("keyup",createListener(isValidEmail));
+    actControl.addEventListener("change",createListener(isValidActtivitie));
+    creditCardInput.addEventListener("blur",createListener(isValidCreditCard));
+    zipCodeInput.addEventListener("keyup",createListener(isValidZipcode));
+    cvvInput.addEventListener("keyup",createListener(isValidCvv));
 
 
+    form.addEventListener("submit", e => {
+        e.preventDefault()
+    })
     
 
 
