@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded',() => {
 
-    const form = document.querySelector("form");
 
     //HELPER FUNCTINOS
 
@@ -42,7 +41,7 @@ document.addEventListener('DOMContentLoaded',() => {
 
 
 
-    //Starting the form
+    //Focus name field and hide  jobRole input
     hideOrshow(jobRole,'hide');
     userNameInput.focus();
 
@@ -116,15 +115,26 @@ document.addEventListener('DOMContentLoaded',() => {
         costElement.textContent = `Total: $${totalCost}`;
         
         for (let a of activities) {
+            const label = a.parentNode;
             //if the target's "data-day-and-time" attribute matches the current's
             //and also are different activities then proceed.
             if (a.getAttribute(attr) === target.getAttribute(attr) && target !== a){
 
                 //if current target is checked
-                //assigns true or false to a.disabled(property)-(a = activitie with same data-day-and-time as current) 
-                (a.disabled = target.checked ? true:false )
+                //assigns true or false to a.disabled(property)-(a = activitie with same data-day-and-time as current)
+                //Change disabled label's color to red.
+                if (target.checked) {
+
+                    a.disabled = true;
+                    label.style.color = "red";
+
+                } else {
+                    a.disabled = false;
+                    label.style.color = 'black'
+                }
             }
         }
+
     });
 
 
@@ -161,20 +171,10 @@ document.addEventListener('DOMContentLoaded',() => {
 
     //VALIDATION
 
-    //Takes a validartor example => isValidName returns another function with an (e) as argument
-    //representing the event from addEventListener then asigns it's content to "value" = (variable)
-    //And calls the validator with value as argument wich will be evaluated depending on the field it was called
-    function createListener (validator) {
-        return e => {
-            value = e.target.value;
-            validator(value);
-        }
-    }
-
     //Payment error are very similar so this function will take care of them by taking their value,regex,input and error messages
     //as arguments. since not all the erorr's are the same the switch statement helps to catch where we're at
     //and update the textContent Based on that.
-    function paymenErorControl (value,regex,input,error) {
+    function paymenErorControl (value,regex,input,error,e) {
 
         if (value.trim("") === "") {
 
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded',() => {
                 break;
             }
             input.style.border = "2px solid red";
-            return false
+            return e.preventDefault()
         }
         else if (!regex.test(value)) {
 
@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded',() => {
                 break;
             }
             input.style.border = "2px solid red";
-            return false
+            return e.preventDefault()
         }
         input.style.border = "2px solid rgb(111, 157, 220)";
         hideOrshow(error,"hide");
@@ -230,9 +230,10 @@ document.addEventListener('DOMContentLoaded',() => {
     //UserName Validation
     const nameErorr = createError("Please enter a name",userNameInput);
 
-    function isValidName (value) {
+    function isValidName (e) {
+        const name = userNameInput.value;
 
-        if (value.length > 0) {
+        if (name.length > 0) {
 
             //Hide Erorr
             hideOrshow(nameErorr,"hide")
@@ -242,17 +243,17 @@ document.addEventListener('DOMContentLoaded',() => {
 
         userNameInput.style.border = "2px solid red";
         //Show Error
-        hideOrshow(nameErorr,"show")
-        return false
+        hideOrshow(nameErorr,"show");
+        return e.preventDefault()
     }
 
     //EmailAddress validation
     const emailError = createError("Please include an (@) and a (.)",emailInput);
 
-    function isValidEmail(value){
-
-        const ad = value.indexOf("@");
-        const dot = value.lastIndexOf(".");
+    function isValidEmail(e){
+        const email = emailInput.value
+        const ad = email.indexOf("@");
+        const dot = email.lastIndexOf(".");
 
         //If the last index where (.) appered in the emialAddress is greater than (@)'s +1 return true
         if (ad > 0 && dot > ad + 1) {
@@ -264,13 +265,13 @@ document.addEventListener('DOMContentLoaded',() => {
 
         hideOrshow(emailError,"show");
         emailInput.style.border = "2px solid red";
-        return false
+        return e.preventDefault()
     }
 
     //Activitie Validation
     const activitieError = createError("Please select 1 or more activities",actControl);
 
-    function isValidActtivitie () {
+    function isValidActtivitie (e) {
         
         //Loops trough the activities and if anyone's checked returns true, otherwise false.
         for (let a of activities) {
@@ -282,7 +283,7 @@ document.addEventListener('DOMContentLoaded',() => {
         }
 
         hideOrshow(activitieError,"show");
-        return false
+        return e.preventDefault()
     }
 
     //Declaration of the paymentMethods INPUTS
@@ -290,37 +291,45 @@ document.addEventListener('DOMContentLoaded',() => {
 
     //CreditCard Validation
     const cardErorr = createError("",creditCardInput);
-    function isValidCreditCard (value) {
-        paymenErorControl(value,/^\d{13,16}$/,creditCardInput,cardErorr)
+
+    function isValidCreditCard (e) {
+
+        const creditCard = creditCardInput.value;
+
+        paymenErorControl(creditCard,/^\d{13,16}$/,creditCardInput,cardErorr,e)
     }
 
     //ZipCode Validation
     const zipError = createError("",zipCodeInput);
-    function isValidZipcode (value) {
-        paymenErorControl(value,/\d{5,}/,zipCodeInput,zipError)
+    function isValidZipcode (e) {
+        const zipCode = zipCodeInput.value
+        paymenErorControl(zipCode,/\d{5,}/,zipCodeInput,zipError,e)
     }
 
     //CVV code Validation
     const cvvErorr = createError("",cvvInput);
-    function isValidCvv (value) {
-        paymenErorControl(value,/^\d{3}$/,cvvInput,cvvErorr)
+    function isValidCvv (e) {
+        const cvv = cvvInput.value
+        paymenErorControl(cvv,/^\d{3}$/,cvvInput,cvvErorr,e)
     }
 
     //Event listeners
-    userNameInput.addEventListener("input",createListener(isValidName));
-    emailInput.addEventListener("keyup",createListener(isValidEmail));
-    actControl.addEventListener("change",createListener(isValidActtivitie));
-    creditCardInput.addEventListener("blur",createListener(isValidCreditCard));
-    zipCodeInput.addEventListener("keyup",createListener(isValidZipcode));
-    cvvInput.addEventListener("keyup",createListener(isValidCvv));
+    userNameInput.addEventListener("keyup",isValidName);
+    emailInput.addEventListener("keyup",isValidEmail);
+    actControl.addEventListener("change",isValidActtivitie);
+    creditCardInput.addEventListener("blur",isValidCreditCard);
+    zipCodeInput.addEventListener("keyup",isValidZipcode);
+    cvvInput.addEventListener("keyup",isValidCvv);
 
+    const form = document.querySelector('form');
 
-    form.addEventListener("submit", e => {
-        e.preventDefault()
+    form.addEventListener('submit',e => {
+        isValidName(e);
+        isValidEmail(e);
+        isValidActtivitie(e);
+        isValidCreditCard(e);
+        isValidZipcode(e);
+        isValidCvv(e);
     })
-    
-
-
-
 });
 
