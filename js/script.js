@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded',() => {
 
     function isValidName (e) {
         const name = userNameInput.value;
-        const regex = /[A-z]\b$/g;
+        const regex = /^[^~!@#$%^&*()_]*[A-z]{1,}[ -]?$/g;
 
         if (name.length > 0 && regex.test(name)) {
 
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded',() => {
 
     function isValidEmail(e){
         const email = emailInput.value;
-        const regex = /^\w+@\w+\.\w+$/ig
+        const regex = /^\w+@\w+\.[a-z]{1,}/ig
 
         if (regex.test(email)) {
             emailInput.style.border = "2px solid rgb(111, 157, 220)";
