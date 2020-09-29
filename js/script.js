@@ -159,11 +159,10 @@ document.addEventListener('DOMContentLoaded',() => {
     paymentInfo[0].disabled = true;
 
     //Credit card willd be the first payment method in the select.
-    showPayment(paymentMethods,"credit-card")
+    showPayment(paymentMethods,"credit-card");
 
     paymentInfo.addEventListener('change', e => {
         const method = e.target.value;
-
         //Call to the showPayment functoin with the user's selected paymet method as argument
         showPayment(paymentMethods,method)
     });
@@ -327,9 +326,12 @@ document.addEventListener('DOMContentLoaded',() => {
         isValidName(e);
         isValidEmail(e);
         isValidActtivitie(e);
-        isValidCreditCard(e);
-        isValidZipcode(e);
-        isValidCvv(e);
+        if (paymentInfo[1].selected == true) {
+            isValidCreditCard(e);
+            isValidZipcode(e);
+            isValidCvv(e);
+        }
+
     })
 });
 
