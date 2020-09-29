@@ -208,11 +208,11 @@ document.addEventListener('DOMContentLoaded',() => {
             //Update Error Message
             switch (input.id) {
                 case "cc-num":
-                error.textContent = "Card number must be between 13 and 16 digits long";
+                error.textContent = "Credit Card number must be between 13 and 16 digits long";
                 break;
 
                 case "zip":
-                error.textContent ="Zip code must have at least 5 digits";
+                error.textContent ="Zip code must be 5 digits long";
                 break;
 
                 case "cvv":
@@ -235,8 +235,9 @@ document.addEventListener('DOMContentLoaded',() => {
 
     function isValidName (e) {
         const name = userNameInput.value;
+        const regex = /[A-z]\b$/g;
 
-        if (name.length > 0) {
+        if (name.length > 0 && regex.test(name)) {
 
             //Hide Erorr
             hideOrshow(nameErorr,"hide")
@@ -255,7 +256,7 @@ document.addEventListener('DOMContentLoaded',() => {
 
     function isValidEmail(e){
         const email = emailInput.value;
-        const regex = /^\w+@\w+\.(com|net|org)$/ig
+        const regex = /^\w+@\w+\.\w+$/ig
 
         if (regex.test(email)) {
             emailInput.style.border = "2px solid rgb(111, 157, 220)";
@@ -303,7 +304,7 @@ document.addEventListener('DOMContentLoaded',() => {
     const zipError = createError("",zipCodeInput);
     function isValidZipcode (e) {
         const zipCode = zipCodeInput.value
-        paymenErorControl(zipCode,/\d{5,}/,zipCodeInput,zipError,e)
+        paymenErorControl(zipCode,/^\d{5}$/,zipCodeInput,zipError,e)
     }
 
     //CVV code Validation
@@ -317,7 +318,7 @@ document.addEventListener('DOMContentLoaded',() => {
     userNameInput.addEventListener("keyup",isValidName);
     emailInput.addEventListener("keyup",isValidEmail);
     actControl.addEventListener("change",isValidActtivitie);
-    creditCardInput.addEventListener("blur",isValidCreditCard);
+    creditCardInput.addEventListener("keyup",isValidCreditCard);
     zipCodeInput.addEventListener("keyup",isValidZipcode);
     cvvInput.addEventListener("keyup",isValidCvv);
 
