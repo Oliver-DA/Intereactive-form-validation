@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded',() => {
 
     function isValidName (e) {
         const name = userNameInput.value;
-        const regex = /^[^~!@#$%^&*()_]*[A-z]{1,}[ -]?$/g;
+        const regex = /^[A-z \s]+$/g;
 
         if (name.length > 0 && regex.test(name)) {
 
