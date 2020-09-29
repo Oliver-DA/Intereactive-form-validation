@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded',() => {
 
 
-    //HELPER FUNCTINOS
+    //HELPER FUNCTIONS
 
-    //Takes and array of ids an returns a new array with all the elements that matched the id
+    //Takes an array of ids an returns a new array with all the elements that matched the id
     function getByIds (ids) {
 
         const elements = [];
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded',() => {
         return elements;
     }
 
-    //Creates a p tag with a erorr message(text) and inserts it to (father).
+    //Creates a p tag with an erorr message(text) and inserts it to (father).
     function createError (text,father) {
 
         const error = document.createElement("p");
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded',() => {
         return error
     }
 
-    //Takes a e(short for element) and a value if value == hide.
+    //Takes a "e" (short for element) and a value if value == hide.
     //returns e.hidden property set to true else set to false.
     const hideOrshow = (e,value) => e.hidden = value == "hide" ? true:false;
 
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded',() => {
             js_puns.forEach(e => hideOrshow(e,"show"));
             love_js.forEach(e => hideOrshow(e,"hide"));
             
-            //Select the fisrt color by default
+            //Selects the fisrt color by default
             js_puns[0].selected = true
         }
         else if(designChoice === design[2].value) {
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded',() => {
             love_js.forEach(e => hideOrshow(e,"show"));
             js_puns.forEach(e => hideOrshow(e,"hide"));
             
-            //Select the fisrt color by default
+            //Selects the first color by default
             love_js[0].selected = true;
 
         } else {
@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded',() => {
 
                 //if current target is checked
                 //assigns true or false to a.disabled(property)-(a = activitie with same data-day-and-time as current)
-                //Change disabled label's color to red.
+                //Change label's color to red.
                 if (target.checked) {
 
                     a.disabled = true;
@@ -143,7 +143,13 @@ document.addEventListener('DOMContentLoaded',() => {
     const [paymentInfo,paypal,bitCoin,creditCard] = getByIds(["payment","paypal","bitcoin","credit-card"]);
     const paymentMethods = [paypal,bitCoin,creditCard];
 
-    //The value of select is will be te first payment method to dispay once the page loads.
+    //Credit Card method selected by default
+    paymentInfo[1].selected = true
+
+    //Disables the "select payment" option from the select field.
+    paymentInfo[0].disabled = true;
+
+    //The value of select will be the payment information to dispay once the page loads.
     function showPayment(methods,select){
         
         //loops trough the methods(Array)
@@ -155,14 +161,12 @@ document.addEventListener('DOMContentLoaded',() => {
         }
     }
 
-    //Disables the "select payment" option from the select field.
-    paymentInfo[0].disabled = true;
-
-    //Credit card willd be the first payment method in the select.
+    //Credit card willd be the first payment information to display.
     showPayment(paymentMethods,"credit-card");
 
     paymentInfo.addEventListener('change', e => {
         const method = e.target.value;
+        
         //Call to the showPayment functoin with the user's selected paymet method as argument
         showPayment(paymentMethods,method)
     });
@@ -247,16 +251,13 @@ document.addEventListener('DOMContentLoaded',() => {
     }
 
     //EmailAddress validation
-    const emailError = createError("Please include an (@) and a (.)",emailInput);
+    const emailError = createError("Please include an (@) and a domain like so example@example.com",emailInput);
 
     function isValidEmail(e){
-        const email = emailInput.value
-        const ad = email.indexOf("@");
-        const dot = email.lastIndexOf(".");
+        const email = emailInput.value;
+        const regex = /^\w+@\w+\.(com|net|org)$/ig
 
-        //If the last index where (.) appered in the emialAddress is greater than (@)'s +1 return true
-        if (ad > 0 && dot > ad + 1) {
-
+        if (regex.test(email)) {
             emailInput.style.border = "2px solid rgb(111, 157, 220)";
             hideOrshow(emailError,"hide");
             return true
