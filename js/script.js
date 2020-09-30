@@ -34,10 +34,8 @@ document.addEventListener('DOMContentLoaded',() => {
     //expample => 'const[userNameInput] will be assign the value of
     //the first element of ids(Array) which is "name" then emailInput
     //the value found with the id "mail" (second id in ids) and so on...
-    const [userNameInput,emailInput,title,
-        jobRole,design,colors,shirtColors] = getByIds(
-        ["name","mail","title","other-title",
-        "design","color","shirt-colors"]);
+    const [userNameInput,emailInput,title,jobRole,design,colors,shirtColors]
+        = getByIds(["name","mail","title","other-title","design","color","shirt-colors"]);
 
 
 
@@ -185,7 +183,7 @@ document.addEventListener('DOMContentLoaded',() => {
             //Updates Error message.
             switch (input.id) {
                 case "cc-num":
-                error.textContent = "Please provide a credir card number";
+                error.textContent = "Please provide a credit card number";
                 break;
 
                 case "zip":
@@ -256,7 +254,7 @@ document.addEventListener('DOMContentLoaded',() => {
 
     function isValidEmail(e){
         const email = emailInput.value;
-        const regex = /^\w+@\w+\.[a-z]{1,}/ig
+        const regex = /^\w+@\w+\.[a-z]{2,}/ig
 
         if (regex.test(email)) {
             emailInput.style.border = "2px solid rgb(111, 157, 220)";
@@ -315,12 +313,12 @@ document.addEventListener('DOMContentLoaded',() => {
     }
 
     //Event listeners
-    userNameInput.addEventListener("keyup",isValidName);
-    emailInput.addEventListener("keyup",isValidEmail);
+    userNameInput.addEventListener("input",isValidName);
+    emailInput.addEventListener("input",isValidEmail);
     actControl.addEventListener("change",isValidActtivitie);
-    creditCardInput.addEventListener("keyup",isValidCreditCard);
-    zipCodeInput.addEventListener("keyup",isValidZipcode);
-    cvvInput.addEventListener("keyup",isValidCvv);
+    creditCardInput.addEventListener("input",isValidCreditCard);
+    zipCodeInput.addEventListener("input",isValidZipcode);
+    cvvInput.addEventListener("input",isValidCvv);
 
     const form = document.querySelector('form');
 
