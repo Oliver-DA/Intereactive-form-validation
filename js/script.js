@@ -58,6 +58,10 @@ document.addEventListener('DOMContentLoaded',() => {
     const js_puns = colorsArr.slice(0,3);
     const love_js = colorsArr.slice(3,);
 
+    const colorsObject = [
+        js_puns,
+        love_js
+    ]
 
     design.addEventListener("change",e => {
         const designChoice = e.target.value;
@@ -187,7 +191,7 @@ document.addEventListener('DOMContentLoaded',() => {
                 break;
 
                 case "zip":
-                error.textContent ="Please provide a zipCode";
+                error.textContent ="Please provide a zip code";
                 break;
 
                 case "cvv":
@@ -290,11 +294,8 @@ document.addEventListener('DOMContentLoaded',() => {
 
     //CreditCard Validation
     const cardErorr = createError("",creditCardInput);
-
     function isValidCreditCard (e) {
-
         const creditCard = creditCardInput.value;
-
         paymenErorControl(creditCard,/^\d{13,16}$/,creditCardInput,cardErorr,e)
     }
 
